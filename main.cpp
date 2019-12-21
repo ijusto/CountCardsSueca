@@ -47,32 +47,74 @@ void printImageFeatures( const cv::Mat &image )
     std::cout << std::endl;
 }
 
-// machine learning
-void ml(){
-    //bool train(const Ptr<TrainData>& trainData, int flags=0);
-    //bool train(InputArray samples, int layout, InputArray responses);
-    //PTR<_Tp> train(const Ptr<TrainData>& data, const _Tp::Params& p, int flags=0);
-    //Ptr<_Tp> train(InputArray samples, int layout, Input Array responses, const _Tp::Params& p, int flags=0);
+void filterImage(cv::Mat originalImage){
+    // Learning from https://www.youtube.com/watch?v=bSeFrPrqZ2A
+    // object tracking... the easy way
+    //      -> color filtering
+    //          - cvtColor() -> from bgr to hsv
+    //          - inRange() -> between a max and a min
+    //      -> contour finding
+    //          - findContours()
+    //          - moments method
+    //
+    // set 1:
+    //      -> convert image from bgr to hsv
+    //          (blue, green, red) -> (hue, saturation, value)
+    //
+    //initial min and max HSV filter values. these will be changed using trackbars
+    int H_MIN = 0; int H_MAX = 256; int S_MIN = 0; int S_MAX = 256; int V_MIN = 0; int V_MAX = 256;
+    //matrix storage for HSV image
+    cv::Mat HSV;
+    //matrix storage for binary threshold image
+    cv::Mat threshold;
+    // void cv::cvtColor(InputArray	src, OutputArray dst, int code, int	dstCn = 0)
+    //convert img from BGR to HSV colorspace
+    cv::cvtColor(originalImage, HSV, cv::COLOR_BGR2HSV);
+    //filter HSV image between values and store filtered image to threshold matrix
+    // set 2:
+    //      -> filter the colors of interest between a min and max threshold
+
+    H_MIN = 0; H_MAX = 495; S_MIN = 150; S_MAX = 491; V_MIN = 210; V_MAX = 400;
+    cv::inRange(HSV, cv::Scalar(H_MIN,S_MIN,V_MIN), cv::Scalar(H_MAX,S_MAX,V_MAX), threshold);
+    cv::namedWindow( "hsv image", cv::WINDOW_AUTOSIZE );
+    cv::imshow( "hsv image", HSV );
+    cv::namedWindow( "threshold image", cv::WINDOW_AUTOSIZE );
+    cv::imshow( "threshold image", threshold );
+
 }
 
+cv::Mat originalImage;
+
+void myChoice( int event, int x, int y, int flags, void *userdata )
+{
+    if( event == cv::EVENT_LBUTTONDOWN ) {
+        filterImage(originalImage);
+    }
+}
+
+int CHOICE; int PREVCHOICE; int c; int d; int u; int num;
+int H_MIN = 0; int H_MAX = 256; int S_MIN = 0; int S_MAX = 256; int V_MIN = 0; int V_MAX = 256;
 
 // MAIN
 
-int main( int argc, char** argv )
-{
-    if( argc != 2 )
-    {
+int main( int argc, char** argv ) {
+    if (argc != 2) {
         std::cout << "The name of the image file is missing !!" << std::endl;
 
         return -1;
     }
 
-    cv::Mat originalImage;
+    std::cout << std::endl;
 
-    originalImage = cv::imread( argv[1], cv::IMREAD_UNCHANGED );
+    std::cout << "select number and click to process" << std::endl;
 
-    if( originalImage.empty() )
-    {
+    std::cout << std::endl;
+
+    originalImage = cv::imread(argv[1], cv::IMREAD_UNCHANGED);
+    resize(originalImage, originalImage,
+           cv::Size(originalImage.cols / 6, originalImage.rows / 6)); // to half size or even smaller
+
+    if (originalImage.empty()) {
         // NOT SUCCESSFUL : the data attribute is empty
 
         std::cout << "Image file could not be open !!" << std::endl;
@@ -80,66 +122,52 @@ int main( int argc, char** argv )
         return -1;
     }
 
-    if( originalImage.channels() > 1 )
-    {
-        // Convert to a single-channel, intensity image
-
-        cv::cvtColor( originalImage, originalImage, cv::COLOR_BGR2GRAY, 1 );
-    }
+    filterImage(originalImage);
 
     // Create window
-
-    cv::namedWindow( "Original Image", cv::WINDOW_AUTOSIZE );
+    cv::namedWindow("Original Image", cv::WINDOW_AUTOSIZE);
 
     // Display image
-
-    cv::imshow( "Original Image", originalImage );
+    cv::imshow("Original Image", originalImage);
 
     // Print some image features
-
     std::cout << "ORIGINAL IMAGE" << std::endl;
 
-    printImageFeatures( originalImage );
+    printImageFeatures(originalImage);
 
     cv::Mat image_clone;
     image_clone = originalImage.clone();
 
     cv::Scalar colorImageClone;
 
-    if (image_clone.channels() == 1) { // gray image
-        colorImageClone = cv::Scalar(0, 255, 0);
-    } else { // colored image
-        colorImageClone = cv::Scalar(0, 255, 0);
-    }
-
     int startPointH = 0;
     int startPointW = 0;
     bool startHorLine = false;
-    for(int h = 0; h < image_clone.size().height; h++){
-        for(int w = 0; w < image_clone.size().width; w++) {
-            int r = image_clone.at<cv::Vec3b>(h,w)[0];
-            int g = image_clone.at<cv::Vec3b>(h,w)[1];
-            int b = image_clone.at<cv::Vec3b>(h,w)[2];
-            if (r == 0 && g == 0 && b == 0){
-                if(!startHorLine){
+    for (int h = 0; h < image_clone.size().height; h++) {
+        for (int w = 0; w < image_clone.size().width; w++) {
+            int r = image_clone.at<cv::Vec3b>(h, w)[0];
+            int g = image_clone.at<cv::Vec3b>(h, w)[1];
+            int b = image_clone.at<cv::Vec3b>(h, w)[2];
+            if (r == 0 && g == 0 && b == 0) {
+                if (!startHorLine) {
                     startHorLine = true;
                     startPointH = h;
                     startPointW = w;
                 }
-            }
-            else {
-                if(startHorLine){
+            } else {
+                if (startHorLine) {
                     startHorLine = !startHorLine;
                     int endPointH = h;
                     int endPointW = w;
-                    cv::line(image_clone, cv::Point(startPointW, startPointH), cv::Point(endPointW, endPointH), colorImageClone);
+                    cv::line(image_clone, cv::Point(startPointW, startPointH), cv::Point(endPointW, endPointH),
+                             colorImageClone);
                 }
             }
         }
     }
 
-    for(int w = 20; w < image_clone.size().width+20; w += 20){
-        for(int h = 20; h < image_clone.size().height+20; h += 20){
+    for (int w = 20; w < image_clone.size().width + 20; w += 20) {
+        for (int h = 20; h < image_clone.size().height + 20; h += 20) {
             cv::line(image_clone, cv::Point(w - 20, h), cv::Point(w, h), colorImageClone);
             cv::line(image_clone, cv::Point(w, h - 20), cv::Point(w, h), colorImageClone);
         }
@@ -147,17 +175,51 @@ int main( int argc, char** argv )
 
     //cv::floodFill(originalImage, cv::Scalar(3, 3, 3), cv::Scalar(3, 3, 3 ));
 
-    cv::namedWindow( "new image", cv::WINDOW_AUTOSIZE );
+    cv::namedWindow("new image", cv::WINDOW_AUTOSIZE);
 
-    cv::imshow( "new image", image_clone );
+    cv::imshow("new image", image_clone);
 
-    // Waiting
+    cv::setMouseCallback( "threshold image", myChoice );
 
-    cv::waitKey( 0 );
+    // Processing keyboard events
 
-    // Destroy the windows
+    for( ; ; ){
+        PREVCHOICE = cv::waitKey(0);
+        CHOICE = cv::waitKey(0);
+        c = cv::waitKey(0);
+        d = cv::waitKey(0);
+        u = cv::waitKey(0);
+        num = c * 100 + d * 10 + u;
 
-    cv::destroyAllWindows();
+        if (((char) CHOICE == 'Q') || ((char) CHOICE == 'q')) {
+            break;
+        }
+
+        if ((((char) PREVCHOICE == 'H') || ((char) PREVCHOICE == 'h')) &&
+            (((char) CHOICE == 'I') || ((char) CHOICE == 'i'))) {
+            H_MIN = num;
+        } else if ((((char) PREVCHOICE == 'H') || ((char) PREVCHOICE == 'h')) &&
+                   (((char) CHOICE == 'A') || ((char) CHOICE == 'a'))) {
+            H_MAX = num;
+        } else if ((((char) PREVCHOICE == 'S') || ((char) PREVCHOICE == 's')) &&
+                   (((char) CHOICE == 'I') || ((char) CHOICE == 'i'))) {
+            S_MIN = num;
+        } else if ((((char) PREVCHOICE == 'S') || ((char) PREVCHOICE == 's')) &&
+                   (((char) CHOICE == 'A') || ((char) CHOICE == 'a'))) {
+            S_MAX = num;
+        } else if ((((char) PREVCHOICE == 'V') || ((char) PREVCHOICE == 'v')) &&
+                   (((char) CHOICE == 'I') || ((char) CHOICE == 'i'))) {
+            V_MIN = num;
+        } else if ((((char) PREVCHOICE == 'V') || ((char) PREVCHOICE == 'v')) &&
+                   (((char) CHOICE == 'A') || ((char) CHOICE == 'a'))) {
+            V_MAX = num;
+        }
+
+
+    }
+    // Destroy the windows --- Actually not needed in such a simple program
+
+    cv::destroyAllWindows( );
 
     return 0;
 }
