@@ -53,12 +53,12 @@ CMAKE_BINARY_DIR = /home/inesjusto/Documents/4ano/CV/CountCardsSueca/cmake-build
 # Directory level rules for the build root directory
 
 # The main recursive "all" target.
-all: CMakeFiles/proj_main.dir/all
+all: CMakeFiles/untitled1.dir/all
 
 .PHONY : all
 
 # The main recursive "clean" target.
-clean: CMakeFiles/proj_main.dir/clean
+clean: CMakeFiles/untitled1.dir/clean
 
 .PHONY : clean
 
@@ -68,31 +68,31 @@ preinstall:
 .PHONY : preinstall
 
 #=============================================================================
-# Target rules for target CMakeFiles/proj_main.dir
+# Target rules for target CMakeFiles/untitled1.dir
 
 # All Build rule for target.
-CMakeFiles/proj_main.dir/all:
-	$(MAKE) -f CMakeFiles/proj_main.dir/build.make CMakeFiles/proj_main.dir/depend
-	$(MAKE) -f CMakeFiles/proj_main.dir/build.make CMakeFiles/proj_main.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/inesjusto/Documents/4ano/CV/CountCardsSueca/cmake-build-debug/CMakeFiles --progress-num=1,2 "Built target proj_main"
-.PHONY : CMakeFiles/proj_main.dir/all
+CMakeFiles/untitled1.dir/all:
+	$(MAKE) -f CMakeFiles/untitled1.dir/build.make CMakeFiles/untitled1.dir/depend
+	$(MAKE) -f CMakeFiles/untitled1.dir/build.make CMakeFiles/untitled1.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/inesjusto/Documents/4ano/CV/CountCardsSueca/cmake-build-debug/CMakeFiles --progress-num=1,2 "Built target untitled1"
+.PHONY : CMakeFiles/untitled1.dir/all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/proj_main.dir/rule: cmake_check_build_system
+CMakeFiles/untitled1.dir/rule: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/inesjusto/Documents/4ano/CV/CountCardsSueca/cmake-build-debug/CMakeFiles 2
-	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/proj_main.dir/all
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/untitled1.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/inesjusto/Documents/4ano/CV/CountCardsSueca/cmake-build-debug/CMakeFiles 0
-.PHONY : CMakeFiles/proj_main.dir/rule
+.PHONY : CMakeFiles/untitled1.dir/rule
 
 # Convenience name for target.
-proj_main: CMakeFiles/proj_main.dir/rule
+untitled1: CMakeFiles/untitled1.dir/rule
 
-.PHONY : proj_main
+.PHONY : untitled1
 
 # clean rule for target.
-CMakeFiles/proj_main.dir/clean:
-	$(MAKE) -f CMakeFiles/proj_main.dir/build.make CMakeFiles/proj_main.dir/clean
-.PHONY : CMakeFiles/proj_main.dir/clean
+CMakeFiles/untitled1.dir/clean:
+	$(MAKE) -f CMakeFiles/untitled1.dir/build.make CMakeFiles/untitled1.dir/clean
+.PHONY : CMakeFiles/untitled1.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.
