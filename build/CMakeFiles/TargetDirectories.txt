@@ -1,0 +1,3 @@
+/home/inesjusto/Documents/4ano/CV/CountCardsSueca/build/CMakeFiles/rebuild_cache.dir
+/home/inesjusto/Documents/4ano/CV/CountCardsSueca/build/CMakeFiles/proj_main.dir
+/home/inesjusto/Documents/4ano/CV/CountCardsSueca/build/CMakeFiles/edit_cache.dir
