@@ -5,6 +5,7 @@
  * **** https://github.com/EdjeElectronics/OpenCV-Playing-Card-Detector/tree/1f8365779f88f7f46634114bf2e35427bc1c00d0
  * **** https://raw.githubusercontent.com/kylehounslow/opencv-tuts/master/object-tracking-tut/objectTrackingTut.cpp
  *
+ * Inês Justo, Rafael Maio, December 2019
  */
 
 #include <iostream>
@@ -30,8 +31,6 @@ std::string best_rank_match_name = "Unknown";
 // Dimensions of rank train images
 int RANK_WIDTH = 70;
 int RANK_HEIGHT = 125;
-
-const char* wndname = "Square Detection Demo";
 
 std::string filename = "7d";
 
@@ -73,11 +72,11 @@ cv::Mat flattener(cv::Mat image, cv::Point2f cornerPoints[], cv::RotatedRect rot
     cv::Point2f cpts[4];
     rotr.points(cpts);
     cv::Mat m = cv::getPerspectiveTransform(cpts, dst); //Calculates a perspective transform from four pairs of the corresponding points.
-    //cv::Mat m = cv::getPerspectiveTransform(cpts, dst); //Calculates a perspective transform from four pairs of the corresponding points.
+    //cv::Mat m = cv::getPerspectiveTransform(cornerPoints, dst); //Calculates a perspective transform from four pairs of the corresponding points.
     cv::warpPerspective(image, warp, m, cv::Size(maxWidth, maxHeight)); // Applies a perspective transformation to an image.
     //cv::warpPerspective(dstimg, warp, m, cv::Size(maxWidth, maxHeight)); // Applies a perspective transformation to an image.
 
-    // Convert to greysacle
+    // Convert to grayscale
     cv::cvtColor(warp, warp, cv::COLOR_BGR2GRAY);
     if(warp.data) {
         cv::namedWindow("warp", cv::WINDOW_AUTOSIZE);
@@ -98,7 +97,6 @@ cv::Mat flattener(cv::Mat image, cv::Point2f cornerPoints[], cv::RotatedRect rot
     }
 
     // Adaptive threshold levels
-    int BKG_THRESH = 60;
     int CARD_THRESH = 30;
 
     // Sample known white pixel intensity to determine good threshold level
@@ -155,7 +153,6 @@ std::string match_card(cv::Mat qCard, int size) {
 
     int best_rank_match_diff = 10000;
     cv::Mat best_rank_diff_img;
-    int i = 0;
 
     // If no contours were found in query card in preprocess_card function,
     // the img size is zero, so skip the differencing process
@@ -203,10 +200,7 @@ std::string match_card(cv::Mat qCard, int size) {
 
 class Card{
     public:
-        cv::Mat image;
         cv::Point2f cornerPoints[4];
-        cv::RotatedRect rotr;
-        cv::Mat cropRank;
         std::string rank;
 };
 
@@ -289,7 +283,7 @@ static void findSquares( const cv::Mat& image, std::vector<std::vector<cv::Point
                     double CARD_MIN_AREA = 1000;
                     if (approx.size() == 4 && fabs(cv::contourArea(approx)) > CARD_MIN_AREA
                         /*&& fabs(cv::contourArea(approx)) < CARD_MAX_AREA*/ && cv::isContourConvex(approx)
-                        && (ratio > 1, 2 && ratio < 1, 7)
+                        && (ratio > 1,2 && ratio < 1,7)
                             ) {
                         //std::cout << "w: " + intToString(r.width) + ", h: " + intToString(r.height) << std::endl;
                         //std::cout << ratio << std::endl;
@@ -334,13 +328,10 @@ static void findSquares( const cv::Mat& image, std::vector<std::vector<cv::Point
                                 }
 
                                 Card c;
-                                c.image = image;
                                 for (int ci = 0; ci < 4; ci++) {
                                     c.cornerPoints[ci] = cornerPoints[ci];
                                 }
-                                c.rotr = rotr;
                                 cv::Mat cropRank = flattener(image, cornerPoints, rotr);
-                                c.cropRank = cropRank;
                                 c.rank = match_card(cropRank, 18);
 
 
@@ -403,9 +394,6 @@ static void drawSquares( cv::Mat& image, const std::vector<std::vector<cv::Point
         cv::polylines(image, &p, &n, 1, true, cv::Scalar(255,255,0/*std::rand()%255,std::rand()%255,std::rand()%255*/), 3, cv::LINE_AA);
     }
     calcPoints(cards);
-    if(image.data) {
-        //cv::imshow(wndname, image);
-    }
 }
 
 int main( int argc, char** argv ) {
@@ -413,8 +401,6 @@ int main( int argc, char** argv ) {
     //filename = "ex_3";
     //image = cv::imread(filename + ".jpg", cv::IMREAD_UNCHANGED);
 
-    //start an infinite loop where webcam feed is copied to cameraFeed matrix
-    //all of our operations will be performed within this loop
     std::vector<std::vector<cv::Point> > squares;
     std::vector<Card> cards;
 
@@ -425,7 +411,6 @@ int main( int argc, char** argv ) {
     for(int ti = 0; ti < 18; ti++){
         train_ranks[ti] = cv::imread(fns[ti] + ".jpg", cv::IMREAD_UNCHANGED);
     }
-
 
     // Processing keyboard events
     //video capture object to acquire webcam feed
@@ -446,7 +431,7 @@ int main( int argc, char** argv ) {
         if(image.data) {
             cv::namedWindow("count cards", cv::WINDOW_AUTOSIZE);
             cv::imshow("count cards", image);
-            cv::imwrite( filename + "_result.jpg", image );
+            //cv::imwrite( filename + "_result.jpg", image );
         }
 
         //delay 30ms so that screen can refresh.
@@ -454,7 +439,6 @@ int main( int argc, char** argv ) {
         //cv::waitKey(0);
         cv::waitKey(30);
     }
-
 
     cv::destroyAllWindows();
     return 0;
