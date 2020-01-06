@@ -395,7 +395,7 @@ void calcPoints(std::vector<Card> & cards){
 // the function draws all the squares in the image
 static void drawSquares( cv::Mat& image, const std::vector<std::vector<cv::Point> >& squares, std::vector<Card> & cards)
 {
-    resize(image, image,cv::Size(image.cols / 10, image.rows / 10)); // to half size or even smaller
+    //resize(image, image,cv::Size(image.cols / 10, image.rows / 10)); // to half size or even smaller
 
     for (size_t i = 0; i < squares.size(); i++) {
         const cv::Point *p = &squares[i][0];
@@ -410,8 +410,8 @@ static void drawSquares( cv::Mat& image, const std::vector<std::vector<cv::Point
 
 int main( int argc, char** argv ) {
 
-    filename = "ex_3";
-    image = cv::imread(filename + ".jpg", cv::IMREAD_UNCHANGED);
+    //filename = "ex_3";
+    //image = cv::imread(filename + ".jpg", cv::IMREAD_UNCHANGED);
 
     //start an infinite loop where webcam feed is copied to cameraFeed matrix
     //all of our operations will be performed within this loop
@@ -426,7 +426,7 @@ int main( int argc, char** argv ) {
         train_ranks[ti] = cv::imread(fns[ti] + ".jpg", cv::IMREAD_UNCHANGED);
     }
 
-    /*
+
     // Processing keyboard events
     //video capture object to acquire webcam feed
     cv::VideoCapture capture;
@@ -437,22 +437,23 @@ int main( int argc, char** argv ) {
     capture.set(cv::CAP_PROP_FRAME_HEIGHT, FRAME_HEIGHT);
     //start an infinite loop where webcam feed is copied to cameraFeed matrix
     //all of our operations will be performed within this loop
-*/
-    //while(true){
-        //capture>>image;
+
+    while(true){
+        capture>>image;
         findSquares(image, squares, cards);
         drawSquares(image, squares, cards);
 
         if(image.data) {
             cv::namedWindow("count cards", cv::WINDOW_AUTOSIZE);
             cv::imshow("count cards", image);
+            cv::imwrite( filename + "_result.jpg", image );
         }
 
         //delay 30ms so that screen can refresh.
         //image will not appear without this waitKey() command
-        cv::waitKey(0);
-        //cv::waitKey(30);
-    //}
+        //cv::waitKey(0);
+        cv::waitKey(30);
+    }
 
 
     cv::destroyAllWindows();
